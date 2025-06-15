@@ -24,14 +24,18 @@ var db *sql.DB
 
 func main() {
 	// Database connection
-	dbHost := getEnv("DB_HOST", "localhost")
-	dbPort := getEnv("DB_PORT", "5432")
-	dbUser := getEnv("DB_USER", "postgres")
-	dbPass := getEnv("DB_PASSWORD", "postgres")
-	dbName := getEnv("DB_NAME", "money_installment")
-
-	connStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		dbHost, dbPort, dbUser, dbPass, dbName)
+	var connStr string
+	if databaseURL := os.Getenv("DATABASE_URL"); databaseURL != "" {
+		connStr = databaseURL
+	} else {
+		dbHost := getEnv("DB_HOST", "localhost")
+		dbPort := getEnv("DB_PORT", "5432")
+		dbUser := getEnv("DB_USER", "postgres")
+		dbPass := getEnv("DB_PASSWORD", "postgres")
+		dbName := getEnv("DB_NAME", "money_installment")
+		connStr = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+			dbHost, dbPort, dbUser, dbPass, dbName)
+	}
 
 	var err error
 	db, err = sql.Open("postgres", connStr)
